@@ -66,18 +66,16 @@ int ex2_1(List<D2In> s){
 // import numpy as np
 // import pandas as pd
 // from functools import reduce
-//
 // instr = pd.read_csv('day2.txt',sep=' ',header=None)
-//
 // def aim_foo(acum,x):
-// I = x[0]
-// v = x[1]
-// if I in ['down','up']:
-// acum['aim'] += v * (-1 if I == 'up' else 1)
-// else:
-// acum['hor'] += v
-// acum['dep'] += v*acum['aim']
-// return acum
+//   I = x[0]
+//   v = x[1]
+//   if I in ['down','up']:
+//     acum['aim'] += v * (-1 if I == 'up' else 1)
+//   else:
+//     acum['hor'] += v
+//     acum['dep'] += v*acum['aim']
+//   return acum
 //
 // res = reduce(aim_foo,instr.to_numpy(),{k:0 for k in ['hor','dep','aim']})
 // res['hor']*res['dep']
