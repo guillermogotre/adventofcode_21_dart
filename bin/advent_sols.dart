@@ -1,14 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:advent_sols/auxtools.dart';
 
-import 'package:advent_sols/auxtools.dart' as tools;
+
 
 int ex1_1(List<int> fields){
-  return tools.count_increasing(fields);
+  return count_increasing(fields);
 }
 int ex1_2(List<int> fields){
-  return tools.count_increasing(  // Get increasing
-      tools.moving_sum(fields, 3) // Rolling sum (3)
+  return count_increasing(  // Get increasing
+      moving_sum(fields, 3) // Rolling sum (3)
   );
 }
 
@@ -21,27 +22,6 @@ void ex1() async{
       .toList();
   print('ex1_1: ${ex1_1(fields)}');
   print('ex1_2: ${ex1_2(fields)}');
-}
-
-enum D2Instruction{ down,up,forward }
-D2Instruction d2ins_map(String k){
-  if (k == 'down') return D2Instruction.down;
-  else if (k == 'up') return D2Instruction.up;
-  else if (k == 'forward') return D2Instruction.forward;
-  else throw Exception();
-}
-
-class D2In{
-  late D2Instruction i;
-  late int v;
-  D2In(this.i,this.v);
-}
-
-class D2Pos{
-  int horizontal = 0;
-  int depth = 0;
-  int aim = 0;
-  // D2Pos({this.horizontal=0, this.depth=0, this.aim=0});
 }
 
 // import numpy as np
@@ -111,7 +91,77 @@ void ex2() async{
   print('ex2_2: ${ex2_2(fields)}');
 }
 
+// import numpy as np
+// import pandas as pd
+// from functools import reduce
+
+// arr_to_binary = lambda x: "".join(x.astype(int).astype(str))
+// with open('day3.txt','r') as ifile:
+//     lst = np.array([list(x.split()[0]) for x in ifile.readlines()]).astype(int)
+
+// cad = arr_to_binary(lst.mean(0)>=0.5) # Binary rep
+// FF = (2**len(cad))-1                 # All 1s binary
+// cad = int(cad,2)                     # Integer
+
+// cad * (FF & (~cad))
+int ex3_1(List<List<int>> l){
+  final rev_list = mean_vector(l).map((a)=>a>=0.5 ? 1 : 0).toList();
+  int gamma_rate = bin_to_int(rev_list);
+  int eps_rate = bin_to_int(rev_list.map((a)=>1-a).toList());
+  return (gamma_rate*eps_rate);
+}
+
+// import numpy as np
+// import pandas as pd
+// from functools import reduce
+//
+// arr_to_binary = lambda x: "".join(x.astype(int).astype(str))
+// with open('day3.txt','r') as ifile:
+//     lst_ori = np.array([list(x.split()[0]) for x in ifile.readlines()]).astype(int)
+//
+// res = []
+// for neg in [False,True]:
+//     lst = lst_ori.copy()
+//     i = 0
+//     while lst.shape[0] > 1:
+//         th = np.logical_xor((lst[:,i].mean() >= 0.5),neg)
+//         msk = lst[:,i] == th
+//         lst = lst[msk]
+//         i+=1
+//     res.append(int("".join(lst[0].astype(str)),2))
+//
+// res[0]*res[1]
+int ex3_2(List<List<int>> l_ori){
+  List<int> res = [];
+  for (int xor in [0,1]){
+    int i = 0;
+    List<List<int>> l = List.from(l_ori); // Copy list
+    while(l.length > 1){
+      // Most / Least (xor) frequent value
+      int v = mean_vector(l).toList()[i] >= 0.5 ? (1-xor) : (xor-0);
+      // Filter by value
+      l = l.where((a)=>a[i]==v).toList();
+      i++;
+    }
+    int rating = bin_to_int(l[0]);
+    res.add(rating);
+  }
+  return res[0]*res[1];
+}
+
+void ex3() async{
+  final input = File('inputs/day3.txt').openRead();
+  final fields = await input
+      .map(utf8.decode)
+      .transform(LineSplitter())
+      .map((a)=>a.split("").map(int.parse).toList())
+      .toList();
+  print('ex3_1: ${ex3_1(fields)}');
+  print('ex3_2: ${ex3_2(fields)}');
+}
+
 void main(List<String> arguments){
   ex1();
   ex2();
+  ex3();
 }
