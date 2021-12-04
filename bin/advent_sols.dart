@@ -160,8 +160,70 @@ void ex3() async{
   print('ex3_2: ${ex3_2(fields)}');
 }
 
+
+// is_winner = False
+// n_iter = iter(numbers)
+//
+// while not is_winner:
+//     b_iter = iter(boards)
+//     n = next(n_iter)
+//     while (not is_winner) and (b_new := next(b_iter,None)) is not None:
+//         b = b_new
+//         is_winner = b.add(n)
+// b.unselected_sum()*n
+int ex4_1(List<int> numbers, List<Board> boards){
+  for(int n in numbers){
+    for(Board b in boards){
+      if (b.add(n)){
+        return n*b.unselected_sum();
+      }
+    }
+  }
+  throw Exception("No winning board");
+}
+
+// boards_won = [False]*len(boards)
+// n_iter = iter(numbers)
+//
+// winning_score = -1
+// for n in numbers:
+//     for i,b in enumerate(boards):
+//         if not boards_won[i]:
+//             w = b.add(n)
+//             if w:
+//                 boards_won[i] = w
+//                 winning_score = b.unselected_sum()*n
+//
+// winning_score
+int ex4_2(List<int> numbers, List<Board> boards){
+  int last_score = 0;
+  final b_won = boards.map((e)=>false).toList();
+  for(int n in numbers){
+    for (int i=0; i<boards.length; i++){
+      if (!b_won[i]){
+        Board b = boards[i];
+        b_won[i] = b.add(n);
+        last_score = b_won[i] ? n*b.unselected_sum() : last_score;
+      }
+    }
+  }
+  return last_score;
+}
+
+void ex4() async{
+  final data = await parseBoardsStream('inputs/day4.txt');
+  final numbers = data.item1;
+  final boards = data.item2.map((b)=>Board(b)).toList();
+
+  print('ex4_1: ${ex4_1(numbers,boards)}');
+  boards.forEach((b) {b.reset();});
+  print('ex4_2: ${ex4_2(numbers,boards)}');
+
+}
+
 void main(List<String> arguments){
-  ex1();
-  ex2();
-  ex3();
+  // ex1();
+  // ex2();
+  // ex3();
+  ex4();
 }

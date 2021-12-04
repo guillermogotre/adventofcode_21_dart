@@ -1,6 +1,9 @@
 import 'package:quiver/iterables.dart';
 import 'package:collection/collection.dart';
 import 'dart:math';
+import 'package:tuple/tuple.dart';
+import 'dart:io';
+import 'dart:convert';
 
 // Day 1
 List<int> moving_sum(List<int> fields, int n){
@@ -54,4 +57,98 @@ int bin_to_int(List<int> l){
       .mapIndexed((i, v) => pow(2,i)*v) // 2**i
       .reduce((a,b)=>a+b)               // sum
       .round();                         // num to int
+}
+
+// Day 4
+// with open('day4.txt','r') as ifile:
+//     numbers = [int(x) for x in ifile.readline()[:-1].split(',')]
+//     boards =  [
+//         [[int(x) for x in row.split()] for row in board.split("\n")] # Board matrix
+//         for board
+//         in ifile.read()[1:] # Drop first newline
+//         .split("\n\n")]     # Split by doble newline
+//
+// boards = [Board(b) for b in boards]
+Future<Tuple2<List<int>, List<List<List<int>>>>> parseBoardsStream(String path) async{
+  final fields = await File(path).openRead()
+      .map(utf8.decode)
+      .transform(LineSplitter())
+      .toList();
+  final numbers = (fields.first).split(",").map(int.parse).toList();
+  final lines = (fields.sublist(1).where((element){return element != "";})
+      .map((e)=>e
+      .replaceAll(RegExp(r"^ +"),"")  // Drop initial space
+      .split(RegExp(r" +"))           // Split by space
+      .map(int.parse).toList())).toList();     // Parse to Int
+  final boards = lines.foldIndexed(<List<List<int>>>[], (index, previous, element){
+    final l = previous as List<List<List<int>>>;
+    if (index % 5 == 0){
+      l.add([]);
+    }
+    l.last.add(element as List<int>);
+    return l;
+  });
+  return Tuple2(numbers, boards);
+}
+
+// class Board:
+//     def __init__(self,m):
+//         self.m = np.array(m)
+//         self.selected = np.zeros(self.m.shape,dtype=bool)
+//
+//     def update_selected(self,true_idxs):
+//         self.selected[true_idxs] = True
+//         return self.selected.all(0).any() or self.selected.all(1).any()
+//
+//     def unselected_sum(self):
+//         return self.m[~self.selected].sum()
+//
+//     def add(self,n):
+//         isin_idxs = (self.m == n).nonzero()
+//         isin = isin_idxs[0].size > 0
+//         return isin and self.update_selected(isin_idxs)
+class Board{
+  late List<int> rows_selected;
+  late List<int> cols_selected;
+  late List<List<bool>> selected;
+  late List<List<int>> m;
+  Board(this.m){
+    reset();
+  }
+
+  bool select(int i, int j){
+    bool win = false;
+    selected[i][j] = true;
+    win = (rows_selected[i] += 1) == m.length;
+    win = win | ((cols_selected[j] += 1) == m[0].length);
+    return win;
+  }
+
+  bool add(int n){
+    bool isin = false;
+    bool win = false;
+    for(int i=0;!isin &&  i< m.length; i++){
+      for(int j=0;!isin && j<m[i].length; j++){
+        isin = m[i][j] == n;
+        win = isin ? select(i, j):false;
+      }
+    }
+    return win;
+  }
+
+  int unselected_sum(){
+    int total = 0;
+    for(int i=0; i<m.length; i++){
+      for(int j=0; j<m[0].length; j++){
+        total += selected[i][j] ? 0 : m[i][j];
+      }
+    }
+    return total;
+  }
+
+  void reset(){
+    rows_selected = [for (int i=0; i<m.length; i++) 0];
+    cols_selected = [for (int i=0; i<m[0].length; i++) 0];
+    selected = m.map((r)=>r.map((e)=>false).toList()).toList();
+  }
 }
