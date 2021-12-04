@@ -5,11 +5,11 @@ import 'package:advent_sols/auxtools.dart';
 
 
 int ex1_1(List<int> fields){
-  return count_increasing(fields);
+  return countIncreasing(fields);
 }
 int ex1_2(List<int> fields){
-  return count_increasing(  // Get increasing
-      moving_sum(fields, 3) // Rolling sum (3)
+  return countIncreasing(  // Get increasing
+      movingSum(fields, 3) // Rolling sum (3)
   );
 }
 
@@ -34,10 +34,8 @@ int ex2_1(List<D2In> s){
   D2Pos pos = s.fold(
       D2Pos(),
       (prev,el){
-        if (el.i == D2Instruction.forward)
-          prev.horizontal += el.v;
-        else
-          prev.depth += (el.i == D2Instruction.up)?-el.v:el.v;
+        if (el.i == D2Instruction.forward) {prev.horizontal += el.v;}
+        else{prev.depth += (el.i == D2Instruction.up)?-el.v:el.v;}
         return prev;
       });
   return pos.horizontal * pos.depth;
@@ -67,8 +65,9 @@ int ex2_2(List<D2In> s){
           prev.horizontal += el.v;
           prev.depth += el.v*prev.aim;
         }
-        else
-          prev.aim += (el.i == D2Instruction.up)?-el.v:el.v;
+        else {
+          prev.aim += (el.i == D2Instruction.up) ? -el.v : el.v;
+        }
         return prev;
       }
   );
@@ -83,7 +82,7 @@ void ex2() async{
       .map(
           (a)=>
               D2In(
-                  d2ins_map(a.split(' ')[0]),
+                  d2insMap(a.split(' ')[0]),
                   int.parse(a.split(' ')[1])))
       .toList();
 
@@ -105,10 +104,10 @@ void ex2() async{
 
 // cad * (FF & (~cad))
 int ex3_1(List<List<int>> l){
-  final rev_list = mean_vector(l).map((a)=>a>=0.5 ? 1 : 0).toList();
-  int gamma_rate = bin_to_int(rev_list);
-  int eps_rate = bin_to_int(rev_list.map((a)=>1-a).toList());
-  return (gamma_rate*eps_rate);
+  final revList = meanVector(l).map((a)=>a>=0.5 ? 1 : 0).toList();
+  int gammaRate = binToList(revList);
+  int epsRate = binToList(revList.map((a)=>1-a).toList());
+  return (gammaRate*epsRate);
 }
 
 // import numpy as np
@@ -131,19 +130,19 @@ int ex3_1(List<List<int>> l){
 //     res.append(int("".join(lst[0].astype(str)),2))
 //
 // res[0]*res[1]
-int ex3_2(List<List<int>> l_ori){
+int ex3_2(List<List<int>> lOri){
   List<int> res = [];
   for (int xor in [0,1]){
     int i = 0;
-    List<List<int>> l = List.from(l_ori); // Copy list
+    List<List<int>> l = List.from(lOri); // Copy list
     while(l.length > 1){
       // Most / Least (xor) frequent value
-      int v = mean_vector(l).toList()[i] >= 0.5 ? (1-xor) : (xor-0);
+      int v = meanVector(l).toList()[i] >= 0.5 ? (1-xor) : (xor-0);
       // Filter by value
       l = l.where((a)=>a[i]==v).toList();
       i++;
     }
-    int rating = bin_to_int(l[0]);
+    int rating = binToList(l[0]);
     res.add(rating);
   }
   return res[0]*res[1];
@@ -175,7 +174,7 @@ int ex4_1(List<int> numbers, List<Board> boards){
   for(int n in numbers){
     for(Board b in boards){
       if (b.add(n)){
-        return n*b.unselected_sum();
+        return n*b.unselectedSum();
       }
     }
   }
@@ -196,18 +195,18 @@ int ex4_1(List<int> numbers, List<Board> boards){
 //
 // winning_score
 int ex4_2(List<int> numbers, List<Board> boards){
-  int last_score = 0;
-  final b_won = boards.map((e)=>false).toList();
+  int lastScore = 0;
+  final bWon = boards.map((e)=>false).toList();
   for(int n in numbers){
     for (int i=0; i<boards.length; i++){
-      if (!b_won[i]){
+      if (!bWon[i]){
         Board b = boards[i];
-        b_won[i] = b.add(n);
-        last_score = b_won[i] ? n*b.unselected_sum() : last_score;
+        bWon[i] = b.add(n);
+        lastScore = bWon[i] ? n*b.unselectedSum() : lastScore;
       }
     }
   }
-  return last_score;
+  return lastScore;
 }
 
 void ex4() async{
@@ -216,14 +215,14 @@ void ex4() async{
   final boards = data.item2.map((b)=>Board(b)).toList();
 
   print('ex4_1: ${ex4_1(numbers,boards)}');
-  boards.forEach((b) {b.reset();});
+  for(var b in boards){b.reset();}
   print('ex4_2: ${ex4_2(numbers,boards)}');
 
 }
 
 void main(List<String> arguments){
-  // ex1();
-  // ex2();
-  // ex3();
+  ex1();
+  ex2();
+  ex3();
   ex4();
 }

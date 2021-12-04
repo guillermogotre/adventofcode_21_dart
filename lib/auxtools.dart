@@ -6,17 +6,17 @@ import 'dart:io';
 import 'dart:convert';
 
 // Day 1
-List<int> moving_sum(List<int> fields, int n){
-  final temp_list = <List<int>>[];
+List<int> movingSum(List<int> fields, int n){
+  final tempList = <List<int>>[];
   for (int i=0; i<n; i++){
-    temp_list.add(fields.sublist(i,fields.length-(n-i-1)));
+    tempList.add(fields.sublist(i,fields.length-(n-i-1)));
   }
-  return zip(temp_list) // Make tuples
+  return zip(tempList) // Make tuples
       .map((e)=>e.reduce((value, element) => value + element)) // Sum tuples
       .toList();
 }
 
-int count_increasing(List<int> fields){
+int countIncreasing(List<int> fields){
   return zip([fields.sublist(1),fields.sublist(0,fields.length-1)]) // Take in pairs
       .where((v)=>v[0]>v[1]) // Filter increasing
       .length;               // List length
@@ -24,11 +24,11 @@ int count_increasing(List<int> fields){
 
 // Day 2
 enum D2Instruction{ down,up,forward }
-D2Instruction d2ins_map(String k){
-  if (k == 'down') return D2Instruction.down;
-  else if (k == 'up') return D2Instruction.up;
-  else if (k == 'forward') return D2Instruction.forward;
-  else throw Exception();
+D2Instruction d2insMap(String k){
+  if (k == 'down') {return D2Instruction.down;}
+  else if (k == 'up') {return D2Instruction.up;}
+  else if (k == 'forward') {return D2Instruction.forward;}
+  else {throw Exception();}
 }
 
 class D2In{
@@ -44,7 +44,7 @@ class D2Pos{
 }
 
 //Day 3
-Iterable<num> mean_vector(List<List<int>> l){
+Iterable<num> meanVector(List<List<int>> l){
   int s = l.length;
   return l.reduce(                          // Sum all vectors
           (a,b)=>zip<int>([a,b])        // For each value
@@ -52,7 +52,7 @@ Iterable<num> mean_vector(List<List<int>> l){
   ).map((a)=>(a/s));                        // Mean
 }
 
-int bin_to_int(List<int> l){
+int binToList(List<int> l){
   return l.reversed                     // MSB to the right
       .mapIndexed((i, v) => pow(2,i)*v) // 2**i
       .reduce((a,b)=>a+b)               // sum
@@ -85,7 +85,7 @@ Future<Tuple2<List<int>, List<List<List<int>>>>> parseBoardsStream(String path) 
     if (index % 5 == 0){
       l.add([]);
     }
-    l.last.add(element as List<int>);
+    l.last.add(element);
     return l;
   });
   return Tuple2(numbers, boards);
@@ -108,8 +108,8 @@ Future<Tuple2<List<int>, List<List<List<int>>>>> parseBoardsStream(String path) 
 //         isin = isin_idxs[0].size > 0
 //         return isin and self.update_selected(isin_idxs)
 class Board{
-  late List<int> rows_selected;
-  late List<int> cols_selected;
+  late List<int> rowsSelected;
+  late List<int> colsSelected;
   late List<List<bool>> selected;
   late List<List<int>> m;
   Board(this.m){
@@ -119,8 +119,8 @@ class Board{
   bool select(int i, int j){
     bool win = false;
     selected[i][j] = true;
-    win = (rows_selected[i] += 1) == m.length;
-    win = win | ((cols_selected[j] += 1) == m[0].length);
+    win = (rowsSelected[i] += 1) == m.length;
+    win = win | ((colsSelected[j] += 1) == m[0].length);
     return win;
   }
 
@@ -136,7 +136,7 @@ class Board{
     return win;
   }
 
-  int unselected_sum(){
+  int unselectedSum(){
     int total = 0;
     for(int i=0; i<m.length; i++){
       for(int j=0; j<m[0].length; j++){
@@ -147,8 +147,8 @@ class Board{
   }
 
   void reset(){
-    rows_selected = [for (int i=0; i<m.length; i++) 0];
-    cols_selected = [for (int i=0; i<m[0].length; i++) 0];
+    rowsSelected = [for (int i=0; i<m.length; i++) 0];
+    colsSelected = [for (int i=0; i<m[0].length; i++) 0];
     selected = m.map((r)=>r.map((e)=>false).toList()).toList();
   }
 }
