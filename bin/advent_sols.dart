@@ -2,18 +2,17 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:advent_sols/auxtools.dart';
 
-
-
-int ex1_1(List<int> fields){
+int ex1_1(List<int> fields) {
   return countIncreasing(fields);
 }
-int ex1_2(List<int> fields){
-  return countIncreasing(  // Get increasing
+
+int ex1_2(List<int> fields) {
+  return countIncreasing(// Get increasing
       movingSum(fields, 3) // Rolling sum (3)
-  );
+      );
 }
 
-void ex1() async{
+void ex1() async {
   final input = File('inputs/advent1.csv').openRead();
   final fields = await input
       .map(utf8.decode)
@@ -30,14 +29,15 @@ void ex1() async{
 // instr.columns = ['I','n']
 // instr_sum = instr.groupby('I').sum().to_dict()['n']
 // (instr_sum['down']-instr_sum['up'])*instr_sum['forward']
-int ex2_1(List<D2In> s){
-  D2Pos pos = s.fold(
-      D2Pos(),
-      (prev,el){
-        if (el.i == D2Instruction.forward) {prev.horizontal += el.v;}
-        else{prev.depth += (el.i == D2Instruction.up)?-el.v:el.v;}
-        return prev;
-      });
+int ex2_1(List<D2In> s) {
+  D2Pos pos = s.fold(D2Pos(), (prev, el) {
+    if (el.i == D2Instruction.forward) {
+      prev.horizontal += el.v;
+    } else {
+      prev.depth += (el.i == D2Instruction.up) ? -el.v : el.v;
+    }
+    return prev;
+  });
   return pos.horizontal * pos.depth;
 }
 
@@ -57,33 +57,25 @@ int ex2_1(List<D2In> s){
 //
 // res = reduce(aim_foo,instr.to_numpy(),{k:0 for k in ['hor','dep','aim']})
 // res['hor']*res['dep']
-int ex2_2(List<D2In> s){
-  D2Pos pos = s.fold(
-      D2Pos(),
-          (prev,el){
-        if (el.i == D2Instruction.forward) {
-          prev.horizontal += el.v;
-          prev.depth += el.v*prev.aim;
-        }
-        else {
-          prev.aim += (el.i == D2Instruction.up) ? -el.v : el.v;
-        }
-        return prev;
-      }
-  );
+int ex2_2(List<D2In> s) {
+  D2Pos pos = s.fold(D2Pos(), (prev, el) {
+    if (el.i == D2Instruction.forward) {
+      prev.horizontal += el.v;
+      prev.depth += el.v * prev.aim;
+    } else {
+      prev.aim += (el.i == D2Instruction.up) ? -el.v : el.v;
+    }
+    return prev;
+  });
   return pos.horizontal * pos.depth;
 }
 
-void ex2() async{
+void ex2() async {
   final input = File('inputs/day2.txt').openRead();
   final fields = await input
       .map(utf8.decode)
       .transform(LineSplitter())
-      .map(
-          (a)=>
-              D2In(
-                  d2insMap(a.split(' ')[0]),
-                  int.parse(a.split(' ')[1])))
+      .map((a) => D2In(d2insMap(a.split(' ')[0]), int.parse(a.split(' ')[1])))
       .toList();
 
   print('ex2_1: ${ex2_1(fields)}');
@@ -103,11 +95,11 @@ void ex2() async{
 // cad = int(cad,2)                     # Integer
 
 // cad * (FF & (~cad))
-int ex3_1(List<List<int>> l){
-  final revList = meanVector(l).map((a)=>a>=0.5 ? 1 : 0).toList();
+int ex3_1(List<List<int>> l) {
+  final revList = meanVector(l).map((a) => a >= 0.5 ? 1 : 0).toList();
   int gammaRate = binToList(revList);
-  int epsRate = binToList(revList.map((a)=>1-a).toList());
-  return (gammaRate*epsRate);
+  int epsRate = binToList(revList.map((a) => 1 - a).toList());
+  return (gammaRate * epsRate);
 }
 
 // import numpy as np
@@ -130,35 +122,34 @@ int ex3_1(List<List<int>> l){
 //     res.append(int("".join(lst[0].astype(str)),2))
 //
 // res[0]*res[1]
-int ex3_2(List<List<int>> lOri){
+int ex3_2(List<List<int>> lOri) {
   List<int> res = [];
-  for (int xor in [0,1]){
+  for (int xor in [0, 1]) {
     int i = 0;
     List<List<int>> l = List.from(lOri); // Copy list
-    while(l.length > 1){
+    while (l.length > 1) {
       // Most / Least (xor) frequent value
-      int v = meanVector(l).toList()[i] >= 0.5 ? (1-xor) : (xor-0);
+      int v = meanVector(l).toList()[i] >= 0.5 ? (1 - xor) : (xor - 0);
       // Filter by value
-      l = l.where((a)=>a[i]==v).toList();
+      l = l.where((a) => a[i] == v).toList();
       i++;
     }
     int rating = binToList(l[0]);
     res.add(rating);
   }
-  return res[0]*res[1];
+  return res[0] * res[1];
 }
 
-void ex3() async{
+void ex3() async {
   final input = File('inputs/day3.txt').openRead();
   final fields = await input
       .map(utf8.decode)
       .transform(LineSplitter())
-      .map((a)=>a.split("").map(int.parse).toList())
+      .map((a) => a.split("").map(int.parse).toList())
       .toList();
   print('ex3_1: ${ex3_1(fields)}');
   print('ex3_2: ${ex3_2(fields)}');
 }
-
 
 // is_winner = False
 // n_iter = iter(numbers)
@@ -170,11 +161,11 @@ void ex3() async{
 //         b = b_new
 //         is_winner = b.add(n)
 // b.unselected_sum()*n
-int ex4_1(List<int> numbers, List<Board> boards){
-  for(int n in numbers){
-    for(Board b in boards){
-      if (b.add(n)){
-        return n*b.unselectedSum();
+int ex4_1(List<int> numbers, List<Board> boards) {
+  for (int n in numbers) {
+    for (Board b in boards) {
+      if (b.add(n)) {
+        return n * b.unselectedSum();
       }
     }
   }
@@ -194,35 +185,88 @@ int ex4_1(List<int> numbers, List<Board> boards){
 //                 winning_score = b.unselected_sum()*n
 //
 // winning_score
-int ex4_2(List<int> numbers, List<Board> boards){
+int ex4_2(List<int> numbers, List<Board> boards) {
   int lastScore = 0;
-  final bWon = boards.map((e)=>false).toList();
-  for(int n in numbers){
-    for (int i=0; i<boards.length; i++){
-      if (!bWon[i]){
+  final bWon = boards.map((e) => false).toList();
+  for (int n in numbers) {
+    for (int i = 0; i < boards.length; i++) {
+      if (!bWon[i]) {
         Board b = boards[i];
         bWon[i] = b.add(n);
-        lastScore = bWon[i] ? n*b.unselectedSum() : lastScore;
+        lastScore = bWon[i] ? n * b.unselectedSum() : lastScore;
       }
     }
   }
   return lastScore;
 }
 
-void ex4() async{
+void ex4() async {
   final data = await parseBoardsStream('inputs/day4.txt');
   final numbers = data.item1;
-  final boards = data.item2.map((b)=>Board(b)).toList();
+  final boards = data.item2.map((b) => Board(b)).toList();
 
-  print('ex4_1: ${ex4_1(numbers,boards)}');
-  for(var b in boards){b.reset();}
-  print('ex4_2: ${ex4_2(numbers,boards)}');
-
+  print('ex4_1: ${ex4_1(numbers, boards)}');
+  for (var b in boards) {
+    b.reset();
+  }
+  print('ex4_2: ${ex4_2(numbers, boards)}');
 }
 
-void main(List<String> arguments){
-  ex1();
-  ex2();
-  ex3();
-  ex4();
+//
+// DAY 5
+//
+
+// '''
+// Example input:
+// 0,9 -> 5,9
+// 8,0 -> 0,8
+// '''
+// with open('day5_mini.txt','r') as ifile:
+//     res = [[[int(x) for x in e.split(',')] for e in r.split('->')] for r in ifile.readlines()]
+//
+// # ex1 / ex2 filter
+// DO_FILTER = False # False for ex2
+// is_straight_line = lambda x: (x[0][0] == x[1][0]) or (x[0][1] == x[1][1])
+// res_filter = np.array(
+//     list(filter(is_straight_line,res))
+//     if DO_FILTER
+//     else res)
+//
+// def interpolate_l(l):
+//     target_size = (np.abs(l[1]-l[0])+1).max()
+//     result = [np.linspace(*(l[:,i]),num=target_size,dtype=int) for i in range(2)]
+//     return np.array(result).T
+//
+// field_counter = {}
+// for l in res_filter:
+//     for p in interpolate_l(l):
+//         k = tuple(p)
+//         v = field_counter.get(k,0) + 1
+//         field_counter[k] = v
+//
+// ((np.array(list(field_counter.values()))>1).sum())
+
+void ex5() async {
+  final input = File('inputs/day5.txt').openRead();
+  final fields = await input
+      .map(utf8.decode)
+      .transform(LineSplitter())
+      .map((r) => r
+          .split("->")
+          .map((e) => e.split(",").map(int.parse).toList())
+          .toList())
+      .toList();
+
+  print('ex5_1: ${countIntersections(fields
+      .where((x) => (x[0][0] == x[1][0]) | (x[0][1] == x[1][1]))
+      .toList())}');
+  print('ex5_2: ${countIntersections(fields)}');
+}
+
+void main(List<String> arguments) {
+  // ex1();
+  // ex2();
+  // ex3();
+  // ex4();
+  ex5();
 }
