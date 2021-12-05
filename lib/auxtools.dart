@@ -187,8 +187,7 @@ Iterable<List<int>> interpolatedList(List<List<int>> l) {
 
 int countIntersections(List<List<List<int>>> res) {
   Map<String, int> d = {};
-  for (List<int> p in iter.concat(res.map(interpolatedList))) {
-    d.update('${p[0]}_${p[1]}', (v) => v + 1, ifAbsent: () => 0);
-  }
+  iter.concat(res.map(interpolatedList)).forEach(
+      (p) => d.update('${p[0]}_${p[1]}', (v) => v + 1, ifAbsent: () => 1));
   return d.values.where((element) => element > 1).length;
 }
