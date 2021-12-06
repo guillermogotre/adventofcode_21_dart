@@ -191,3 +191,41 @@ int countIntersections(List<List<List<int>>> res) {
       (p) => d.update('${p[0]}_${p[1]}', (v) => v + 1, ifAbsent: () => 1));
   return d.values.where((element) => element > 1).length;
 }
+
+// Day 6
+// Dynamic programming solver
+class DPSolverDay6 {
+  Map<String, int> cache = {};
+
+  String _key(int init_n, int t) {
+    return '${init_n}_${t}';
+  }
+
+  int get(int init_n, int t) {
+    String k = _key(init_n, t);
+    if (cache.containsKey(k)) {
+      return cache[k]!;
+    }
+    if (t < 0) {
+      return 0;
+    }
+    if (t == 0) {
+      return 1;
+    }
+
+    int total = 0;
+    if (init_n == 0) {
+      for (var v in [
+        [6, t - 1],
+        [8, t - 1]
+      ]) {
+        total += cache[_key(v[0], v[1])] = get(v[0], v[1]);
+      }
+    } else {
+      int reduction = min(init_n, t);
+      total += cache[_key(init_n - reduction, t - reduction)] =
+          get(init_n - reduction, t - reduction);
+    }
+    return total;
+  }
+}

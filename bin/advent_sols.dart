@@ -257,10 +257,61 @@ void ex5() async {
           .toList())
       .toList();
 
-  print('ex5_1: ${countIntersections(fields
-      .where((x) => (x[0][0] == x[1][0]) | (x[0][1] == x[1][1]))
-      .toList())}');
+  print(
+      'ex5_1: ${countIntersections(fields.where((x) => (x[0][0] == x[1][0]) | (x[0][1] == x[1][1])).toList())}');
   print('ex5_2: ${countIntersections(fields)}');
+}
+
+
+// '''
+// Day 6. Example input:
+//
+// Example input:
+// 3,4,3,1,2
+// '''
+// with open('day6.txt','r') as ifile:
+//     res = [int(x) for x in ifile.read().split(',')]
+//
+// cache = {}
+// def foo(init_n, t):
+//     # Dynamic programming
+//     if (init_n,t) in cache:
+//         return cache[(init_n,t)]
+//
+//     if t < 0:
+//         return 0
+//     elif t == 0:
+//         return 1
+//
+//     total = 0
+//     if init_n == 0:
+//         for p in [(6,t-1),(8,t-1)]:
+//             cache[p] = foo(*p)
+//             total += cache[p]
+//     else:
+//         red = min(init_n,t)
+//         p = (init_n-red,t-red)
+//         cache[p] = foo(*p)
+//         total += cache[p]
+//     return total
+//
+// np.sum([foo(e,256) for e in res])
+void ex6() async {
+  final input = await File('inputs/day6.txt')
+      .openRead()
+      .map(utf8.decode)
+      .transform(LineSplitter())
+      .map((e) => e.split(',').map(int.parse))
+      .first;
+
+  DPSolverDay6 solver = DPSolverDay6();
+
+  //Ex6_1
+  int days = 80;
+  print('ex6_1 : ${input.map((e)=>solver.get(e,days)).reduce((v, e) => v+e)}');
+  days = 256;
+  print('ex6_2 : ${input.map((e)=>solver.get(e,days)).reduce((v, e) => v+e)}');
+  return null;
 }
 
 void main(List<String> arguments) {
@@ -268,5 +319,6 @@ void main(List<String> arguments) {
   // ex2();
   // ex3();
   // ex4();
-  ex5();
+  // ex5();
+  ex6();
 }
