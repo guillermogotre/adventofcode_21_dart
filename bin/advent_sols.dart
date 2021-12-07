@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:advent_sols/auxtools.dart';
 
 int ex1_1(List<int> fields) {
@@ -262,7 +263,6 @@ void ex5() async {
   print('ex5_2: ${countIntersections(fields)}');
 }
 
-
 // '''
 // Day 6. Example input:
 //
@@ -296,6 +296,24 @@ void ex5() async {
 //     return total
 //
 // np.sum([foo(e,256) for e in res])
+
+// BETTER alternative solution by Aarón Jerónimo
+// T = 256
+// with open('day6.txt','r') as ifile:
+//     res = [int(x) for x in ifile.read().split(',')]
+//
+// counter = [0]*9
+// for v in res:
+//     counter[v] += 1
+//
+// for _ in range(T):
+//     aux = counter[0]
+//     for i in range(8):
+//         counter[i] = counter[i+1]
+//     counter[6] += aux
+//     counter[8] = aux
+//
+// sum(counter)
 void ex6() async {
   final input = await File('inputs/day6.txt')
       .openRead()
@@ -308,10 +326,52 @@ void ex6() async {
 
   //Ex6_1
   int days = 80;
-  print('ex6_1 : ${input.map((e)=>solver.get(e,days)).reduce((v, e) => v+e)}');
+  print(
+      'ex6_1 : ${input.map((e) => solver.get(e, days)).reduce((v, e) => v + e)}');
   days = 256;
-  print('ex6_2 : ${input.map((e)=>solver.get(e,days)).reduce((v, e) => v+e)}');
-  return null;
+  print(
+      'ex6_2 : ${input.map((e) => solver.get(e, days)).reduce((v, e) => v + e)}');
+}
+
+int median(List<int> list) {
+  list.sort();
+  var length = list.length;
+  if (length % 2 == 1) {
+    return list[(length / 2 + 0.5).toInt()];
+  } else {
+    return ((list[length ~/ 2] + list[length ~/ 2 + 1]) ~/ 2);
+  }
+}
+
+int eval71(Iterable<int> l, int i) {
+  return l.map((e) => (e - i).abs()).reduce((a, b) => a + b);
+}
+
+int eval72(Iterable<int> l, int i) {
+  return l
+      .map((e) => (e - i).abs())
+      .map((e) => ((e + 1) * e / 2).round())
+      .reduce((a, b) => a + b);
+}
+
+void ex7() async {
+  List<int> input = (await File('inputs/day7.txt')
+          .openRead()
+          .map(utf8.decode)
+          .transform(LineSplitter())
+          .map((e) => e.split(',').map(int.parse))
+          .first)
+      .toList()
+    ..sort();
+
+  int sol1 = eval71(input, input[(input.length / 2).round()]);
+
+  int imin = input.reduce(min);
+  int imax = input.reduce(max);
+  int sol2 = [for (int i = imin; i <= imax; i++) eval72(input, i)].reduce(min);
+
+  print('ex7_1 : ${sol1}');
+  print('ex7_2 : ${sol2}');
 }
 
 void main(List<String> arguments) {
@@ -320,5 +380,6 @@ void main(List<String> arguments) {
   // ex3();
   // ex4();
   // ex5();
-  ex6();
+  // ex6();
+  ex7();
 }
