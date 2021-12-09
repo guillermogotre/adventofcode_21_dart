@@ -374,6 +374,49 @@ void ex7() async {
   print('ex7_2 : ${sol2}');
 }
 
+// Day 8
+
+// def get_segment(i):
+//     v = np.zeros(7,dtype=bool)
+//     v[i] = True
+//     return v
+//
+// def get_idx(vocabulary,v):
+//     return (vocabulary==v).all(1).nonzero()[0][0]
+//
+// def get_numbers(vocabulary,target):
+//     segments_count = vocabulary.sum(1)
+//     numbers_count = vocabulary.sum(0)
+//     n1,n4,n7,n8 = [(segments_count == i).nonzero()[0][0] for i in [2,4,3,7]]
+//     b,e,f = [(numbers_count == i).nonzero()[0][0] for i in [6,4,9]]
+//     n9 = get_idx(vocabulary,vocabulary[n8]&(~get_segment(e)))
+//     a = (vocabulary[n7]&~vocabulary[n1]).nonzero()[0][0]
+//     d = ((vocabulary[n4]&~vocabulary[n1])&~get_segment(b)).nonzero()[0][0]
+//     n0 = get_idx(vocabulary,vocabulary[n8]&(~get_segment(d)))
+//     n6 = [i for i in (segments_count == 6).nonzero()[0] if i not in [n0,n9]][0]
+//     n5 = get_idx(vocabulary,vocabulary[n6]&vocabulary[n9])
+//     n2 = get_idx(vocabulary,vocabulary[n8]&~get_segment(b)&~get_segment(f))
+//     n3 = get_idx(vocabulary,vocabulary[n8]&~get_segment(b)&~get_segment(e))
+//
+//     vocabulary = vocabulary[[n0,n1,n2,n3,n4,n5,n6,n7,n8,n9]]
+//     return [get_idx(vocabulary,t) for t in target]
+//
+// # ex = "abcefg cf acdeg acdfg bcdf abdfg abdefg acf abcdefg abcdfg | cf acf bcdf abcdefg".split("|")
+// results = []
+// for l in open('day8.txt','r'):
+//     letters = "abcdefg"
+//     vocabulary,target = [
+//         np.array([[
+//             c in segments
+//             for c in letters ]for segments in e.split()
+//         ]) for e in l.split("|")]
+//     results.append(get_numbers(vocabulary,target))
+//
+// #ex1
+// print(np.isin(results,[1,4,7,8]).sum())
+// #ex2
+// (results*np.array([1000,100,10,1])[None,:]).sum(1).sum()
+
 void main(List<String> arguments) {
   // ex1();
   // ex2();
